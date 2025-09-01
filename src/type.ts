@@ -1,5 +1,5 @@
 export type Car = {
-    id: number;
+    id? : number;
     brand: string;
     model: string;
     color: string;

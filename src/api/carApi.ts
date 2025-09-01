@@ -36,3 +36,13 @@ export const deleteCar = (id: number): Promise<number> => {
     alert(id + '번 데이터를 삭제합니다.');
     return Promise.resolve(id);
 }
+
+export const addCar = (car: Car): Promise<Car> => {
+    const res: Car = {...car, id: 999};
+    return Promise.resolve(res);
+}
+
+export const updateCar = (car: Car): Promise<Car> => {
+    const res: Car = {...car}; //매개변수로 들어온 카 복사에서 반환?
+    return Promise.resolve(res);
+}

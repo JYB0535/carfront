@@ -3,7 +3,12 @@ import type { Car } from "../type"
 import { deleteCar, getCars } from "../api/carApi";
 import { DataGrid } from "@mui/x-data-grid";
 import type { GridCellParams, GridColDef } from "@mui/x-data-grid";
-import { Snackbar } from "@mui/material";
+import { Snackbar, Tooltip } from "@mui/material";
+import AddCar from "../components/AddCar";
+import EditCar from "../components/EditCar";
+import { IconButton } from "@mui/material"
+import DeleteIcon from '@mui/icons-material/Delete';
+
 
 export default function CarList() {
     const [data, setData] = useState<Car[]>([]);
@@ -19,6 +24,19 @@ export default function CarList() {
         {field: 'modelYear', headerName: '연식', width: 150},
         {field: 'price', headerName: '가격', width: 150},
         {
+            field: 'edit',
+            headerName: '',
+            width: 90,
+            sortable: false,
+            filterable: false,
+            disableColumnMenu: true,
+             //셀 안에 렌더링 할거
+            renderCell: (params: GridCellParams) => (
+                //params.row. 파라미터 다 가지고 와서 row를 딱 집어서 id row만 잇는게 아니라 다른 데이터도 같이 넘어오나봄?
+                <EditCar carData={params.row}/>
+            )
+        },
+        {
             field: 'delete',
             headerName: '',
             width: 90,
@@ -27,10 +45,11 @@ export default function CarList() {
             disableColumnMenu: true,
              //셀 안에 렌더링 할거
             renderCell: (params: GridCellParams ) => (
-                //params.row. 파라미터 다 가지고 와서 row를 딱 집어서 id row만 잇는게 아니라 다른 데이터도 같이 넘어오나봄?
-                <button onClick={() => deleteCarData(params.row.id)}>  
-                    삭제 
-                </button>
+                <Tooltip title="삭제">
+                    <IconButton size="small" onClick={() => deleteCarData(params.row.id)}>  
+                        <DeleteIcon />
+                    </IconButton>
+                </Tooltip>
             )
         }
     ]
@@ -39,18 +58,16 @@ export default function CarList() {
         getCars()
         .then(res => setData(res)) //성공했을때 할거
         .catch(err => console.log(err)) //실패했을 때 
-       
     }
 
     const deleteCarData = (id: number) => {
-        deleteCar(id) //넘어온 아이디로 api호출?
-        .then((res) => {
-            setToastVal({open: true, msg: `${res}번 데이터가 삭제되었습니다`}) // Promise의 then에 넣어줬으니 진짜 삭제 성공했을때만 토스트 알림 올라온다.
-        }) 
-        .catch(err => console.log(err));
-      
-
-
+        if(confirm(`${id}번 데이터를 삭제하시겠습니까?`)) {       //진짜 삭제할건지 확인
+            deleteCar(id) //넘어온 아이디로 api호출?
+            .then((res) => {
+                setToastVal({open: true, msg: `${res}번 데이터가 삭제되었습니다`}); // Promise의 then에 넣어줬으니 진짜 삭제 성공했을때만 토스트 알림 올라온다.
+        })
+         .catch(err => console.log(err));
+        }
     }
 
     useEffect(() => { //창 열렸을 때 데이터 한번은 받아와야한다. 
@@ -60,11 +77,13 @@ export default function CarList() {
 
     return (
         <>
+            <AddCar/> 
             <DataGrid 
                 rows={data} //한 행마다 뿌려줄 배열 
                 columns={columns}
                 getRowId={row => row.id} //열 하나 가지고 와서 그 열의 아이디 반환
                 disableRowSelectionOnClick={true}
+                showToolbar //이거 책이랑 다름 버전 바뀌면서 책에 있는건 없어졌다>??
             />
             <Snackbar
                 open={toastBal.open}        
@@ -72,7 +91,6 @@ export default function CarList() {
                 message={toastBal.msg}
                 autoHideDuration={2000} // 몇초만에 내려갈건지 
             />
-
         </>
     )
 }
