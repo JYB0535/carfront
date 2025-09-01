@@ -43,8 +43,12 @@ export default function CarList() {
     }
 
     const deleteCarData = (id: number) => {
-        deleteCar(id); //넘어온 아이디로 api호출?
-        setToastVal({open: true, msg: `${id}번 데이터가 삭제되었습니다`})
+        deleteCar(id) //넘어온 아이디로 api호출?
+        .then((res) => {
+            setToastVal({open: true, msg: `${res}번 데이터가 삭제되었습니다`}) // Promise의 then에 넣어줬으니 진짜 삭제 성공했을때만 토스트 알림 올라온다.
+        }) 
+        .catch(err => console.log(err));
+      
 
 
     }
@@ -60,6 +64,7 @@ export default function CarList() {
                 rows={data} //한 행마다 뿌려줄 배열 
                 columns={columns}
                 getRowId={row => row.id} //열 하나 가지고 와서 그 열의 아이디 반환
+                disableRowSelectionOnClick={true}
             />
             <Snackbar
                 open={toastBal.open}        
