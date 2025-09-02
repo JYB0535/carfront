@@ -4,7 +4,11 @@ import { Button, Dialog, DialogActions, DialogContent, DialogTitle } from "@mui/
 import { addCar } from "../api/carApi";
 import CarDialogContent from "./CarDialogContent";
 
-export default function AddCar() { //모달 만들어줄거임
+type AddCarProps = {
+    loadCarData: () => void; //이 함수는 매개변수 없고 반환타입이 보이드다.
+}
+                                //props로 로드카 데이터 받아옴 
+export default function AddCar({loadCarData} : AddCarProps) { //모달 만들어줄거임
     const [open, setOpen] = useState(false); //모달에 들어가야하는것?
     const [car, setCar] = useState<Car>({
         brand: '',
@@ -25,8 +29,14 @@ export default function AddCar() { //모달 만들어줄거임
     const handleOpen = () => setOpen(true);
     const handleClose = () => setOpen(false);
 
-    const handleSave = () => {
-        addCar(car);
+    const handleSave = async () => {
+        await addCar(car); //api호출  //결과 올떄까지 기다렸다가 로드카 데이터 할 예정 
+        //car list reload 필요 왜? 저장하니까 새로고침해야 정보가 나와서 근데 얘는 자식 컴포넌트라서
+        //할수없는게 없음 부모로 부터 받아와야함<carlist>
+        //부모로부터 loadcardata받아와서 사용할 예정  //위에 addCar컴포넌트에 props로 로드카 데이터 받아옴 
+        loadCarData(); //백엔드가 바쁘면 비동기 순서가 어긋날 수 있어서(추가되는 요청이 반영
+        //전에 로드가 먼저 되는경우가 존재할 수 있음. 그래서 async 추가해줄것임 
+
         setCar({ //모달에 남아있는 유저가 입력한 정보 한번 클리어 시키려고 모달만 켜졌다 꺼졌다하는거지 컴포넌트 계속 마운트 된 상태라 스테이트 유지된다. 
             brand: '',
             model: '',

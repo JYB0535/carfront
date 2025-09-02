@@ -33,7 +33,10 @@ export default function CarList() {
              //셀 안에 렌더링 할거
             renderCell: (params: GridCellParams) => (
                 //params.row. 파라미터 다 가지고 와서 row를 딱 집어서 id row만 잇는게 아니라 다른 데이터도 같이 넘어오나봄?
-                <EditCar carData={params.row}/>
+                <EditCar 
+                    carData={params.row} 
+                    loadCarData={loadCarData}
+                />
             )
         },
         {
@@ -54,6 +57,7 @@ export default function CarList() {
         }
     ]
 
+    //데이터 로딩할때 쓰는거 
     const loadCarData = () => {
         getCars()
         .then(res => setData(res)) //성공했을때 할거
@@ -64,6 +68,7 @@ export default function CarList() {
         if(confirm(`${id}번 데이터를 삭제하시겠습니까?`)) {       //진짜 삭제할건지 확인
             deleteCar(id) //넘어온 아이디로 api호출?
             .then((res) => {
+                loadCarData(); //딜리트 카가 성공하면 로드 카 데이터 하고 밑에서 토스트 알림까지 //순서보장을 위해 async await주거나 아님 이렇게 콜백을 주거나 (성공이후 실패 이후 이기때문에) 순서 보장 된다 
                 setToastVal({open: true, msg: `${res}번 데이터가 삭제되었습니다`}); // Promise의 then에 넣어줬으니 진짜 삭제 성공했을때만 토스트 알림 올라온다.
         })
          .catch(err => console.log(err));
@@ -77,7 +82,7 @@ export default function CarList() {
 
     return (
         <>
-            <AddCar/> 
+            <AddCar loadCarData={loadCarData}/> 
             <DataGrid 
                 rows={data} //한 행마다 뿌려줄 배열 
                 columns={columns}

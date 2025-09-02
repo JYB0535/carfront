@@ -1,10 +1,14 @@
 import axios from "axios";
 import type { Car } from "../type";
 
+const BASE_URL = import.meta.env.VITE_API_URL;
+
 //자동차 목록 조회
 export const getCars = async (): Promise<Car[]> => { //Promise추가해줌 왜였지 들었는데 생각이 안나 
     
-    const response = await axios.get("http://localhost:8080/cars");
+    // const response = await axios.get("http://localhost:8080/cars");
+    //이제 프록시 써서 8080 직접 보게 할 필요 없이 프록시로 보냄 
+    const response = await axios.get(`${BASE_URL}/cars`);
     return response.data;
 
 
@@ -14,6 +18,7 @@ export const getCars = async (): Promise<Car[]> => { //Promise추가해줌 왜�
     // const getCarsDummy = [ //이 함수에서 반환해야할게 배열이라서 대괄호로 시작
     //     {   id: 1,
     //         brand: 'Ford',
+    
     //         model: 'Mustang',
     //         color: 'Red',
     //         registrationNumber: "ADF-1121",
@@ -40,17 +45,34 @@ export const getCars = async (): Promise<Car[]> => { //Promise추가해줌 왜�
     //return Promise.resolve(getCarsDummy); //이러면 getCarsDummy를 감싸는 Promise가 반환된다. then과 catch 사용가능 
 }
 
-export const deleteCar = (id: number): Promise<number> => {
-    alert(id + '번 데이터를 삭제합니다.');
-    return Promise.resolve(id);
+// export const deleteCar = (id: number): Promise<number> => {
+//     alert(id + '번 데이터를 삭제합니다.');
+//     return Promise.resolve(id);
+// }
+
+export const deleteCar = async (id: number): Promise<number> => {
+    const response = await axios.delete(`${BASE_URL}/cars/${id}`);
+    return response.data;
 }
 
-export const addCar = (car: Car): Promise<Car> => {
-    const res: Car = {...car, id: 999};
-    return Promise.resolve(res);
+// export const addCar = (car: Car): Promise<Car> => {
+//     const res: Car = {...car, id: 999};
+//     return Promise.resolve(res);
+// }
+
+export const addCar = async (car: Car): Promise<Car> => {
+    const response = await axios.post(`${BASE_URL}/cars`, car); //이대로 넘기면 알아서 자바스크립트에서 변환해준다??
+    return response.data; //리스폰스 바디 리턴?    
 }
 
-export const updateCar = (car: Car): Promise<Car> => {
-    const res: Car = {...car}; //매개변수로 들어온 카 복사에서 반환?
-    return Promise.resolve(res);
+
+
+// export const updateCar = (car: Car): Promise<Car> => {
+//     const res: Car = {...car}; //매개변수로 들어온 카 복사에서 반환?
+//     return Promise.resolve(res);
+// }
+
+export const updateCar = async (car: Car): Promise<Car> => {
+    const response = await axios.put(`${BASE_URL}/cars`, car); //이대로 넘기면 알아서 자바스크립트에서 변환해준다??
+    return response.data; //리스폰스 바디 리턴?    
 }

@@ -8,9 +8,10 @@ import EditIcon from '@mui/icons-material/Edit';
 
 type EditCarprops = {
     carData: Car;
+    loadCarData: () => void;
 }
 
-export default function EditCar({carData}: EditCarprops) {
+export default function EditCar({carData, loadCarData}: EditCarprops) {
     const [open, setOpen] = useState(false);
     const [car, setCar] = useState<Car>({
         id: 0, //얘는 수정이라 아이디도 필요해서 일단 0으로 초기화 시켜놓음 
@@ -39,8 +40,12 @@ export default function EditCar({carData}: EditCarprops) {
         setOpen(false);
     }
 
-    const handleSave = () => {
-        updateCar(car);
+    const handleSave = async () => {
+        await updateCar(car);
+        //업데이트 되고 나면 로드카데이터 호출;
+        //car list reload
+        loadCarData();
+
         setCar({
             id: 0,
             brand: '',
