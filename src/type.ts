@@ -7,3 +7,9 @@ export type Car = {
     modelYear: number;
     price: number;
 }
+
+export type User = {
+    username: string;
+    password: string;
+}
+

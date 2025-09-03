@@ -1,14 +1,27 @@
-import axios from "axios";
+import axios, { type AxiosRequestConfig } from "axios";
 import type { Car } from "../type";
 
 const BASE_URL = import.meta.env.VITE_API_URL;
+
+const getAxiosConfig = (): AxiosRequestConfig => {//매개변수 없고 반환타입은 악시오스
+    //얘는 악시오스 설정 객체를 반환하면 된다 그래서 객체 리턴
+    const token = sessionStorage.getItem('jwt'); //토큰 위치 
+
+    return {
+        headers: {
+            'Authorization': token
+        }
+
+}    
+};
+
 
 //자동차 목록 조회
 export const getCars = async (): Promise<Car[]> => { //Promise추가해줌 왜였지 들었는데 생각이 안나 
     
     // const response = await axios.get("http://localhost:8080/cars");
     //이제 프록시 써서 8080 직접 보게 할 필요 없이 프록시로 보냄 
-    const response = await axios.get(`${BASE_URL}/cars`);
+    const response = await axios.get(`${BASE_URL}/cars`, getAxiosConfig());
     return response.data;
 
 
@@ -50,8 +63,10 @@ export const getCars = async (): Promise<Car[]> => { //Promise추가해줌 왜�
 //     return Promise.resolve(id);
 // }
 
+
+//토큰 헤더에 담아주게 바꿔야함 
 export const deleteCar = async (id: number): Promise<number> => {
-    const response = await axios.delete(`${BASE_URL}/cars/${id}`);
+    const response = await axios.delete(`${BASE_URL}/cars/${id}`, getAxiosConfig());
     return response.data;
 }
 
@@ -61,7 +76,7 @@ export const deleteCar = async (id: number): Promise<number> => {
 // }
 
 export const addCar = async (car: Car): Promise<Car> => {
-    const response = await axios.post(`${BASE_URL}/cars`, car); //이대로 넘기면 알아서 자바스크립트에서 변환해준다??
+    const response = await axios.post(`${BASE_URL}/cars`, car, getAxiosConfig()); //이대로 넘기면 알아서 자바스크립트에서 변환해준다??
     return response.data; //리스폰스 바디 리턴?    
 }
 
@@ -73,6 +88,6 @@ export const addCar = async (car: Car): Promise<Car> => {
 // }
 
 export const updateCar = async (car: Car): Promise<Car> => {
-    const response = await axios.put(`${BASE_URL}/cars`, car); //이대로 넘기면 알아서 자바스크립트에서 변환해준다??
+    const response = await axios.put(`${BASE_URL}/cars`, car,  getAxiosConfig()); //이대로 넘기면 알아서 자바스크립트에서 변환해준다??
     return response.data; //리스폰스 바디 리턴?    
 }

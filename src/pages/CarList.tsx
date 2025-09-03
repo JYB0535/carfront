@@ -3,14 +3,16 @@ import type { Car } from "../type"
 import { deleteCar, getCars } from "../api/carApi";
 import { DataGrid } from "@mui/x-data-grid";
 import type { GridCellParams, GridColDef } from "@mui/x-data-grid";
-import { Snackbar, Tooltip } from "@mui/material";
+import { Button, Snackbar, Tooltip } from "@mui/material";
 import AddCar from "../components/AddCar";
 import EditCar from "../components/EditCar";
 import { IconButton } from "@mui/material"
 import DeleteIcon from '@mui/icons-material/Delete';
+import { useAuthStore } from "../store";
 
 
 export default function CarList() {
+    const { logout } = useAuthStore();
     const [data, setData] = useState<Car[]>([]);
     const [toastBal, setToastVal] = useState({
         open: false, msg: ''
@@ -79,10 +81,20 @@ export default function CarList() {
         loadCarData();
     }, []); //빈 배열은 초기 마운트대 한번만
 
+    const handleLogout = () => {
+       sessionStorage.setItem("jwt", ""); //리무브 아이템 써도 되고 우리가 사용한 방식은 빈 문자열로 덮어쓰는거 (토큰버리기 )
+       // sessionStorage.removeItem("jwt"); 
+
+       //로그아웃하면 전역 인증상태 바꿔줘야함
+       logout();
+
+
+    }
 
     return (
         <>
             <AddCar loadCarData={loadCarData}/> 
+            <Button onClick={handleLogout}>로그아웃</Button>
             <DataGrid 
                 rows={data} //한 행마다 뿌려줄 배열 
                 columns={columns}
